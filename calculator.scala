@@ -14,49 +14,35 @@
 
   /** Representation of `acc` register. */
   var acc: Int = 0
-  // define additional registers here
-  var a: Int         = 0
-  var b: Int         = 0
+
+  /** Representations of side registers a and b. */
+  var a: Int = 0
+  var b: Int = 0
+
+  /** Representation of blink flag. */
   var blink: Boolean = false
+
+  def setAccClearBlink(value: Int): Unit = {
+    acc = value
+    blink = false
+  }
+
+  def updateSideRegister(value: Int): Unit = {
+    if !blink then a = value else b = value
+    blink = !blink
+  }
 
   for cmd <- commands do {
     cmd match {
-      case "+" => {
-        acc = a + b
-        blink = false
-      }
-      case "-" => {
-        acc = a - b
-        blink = false
-      }
-      case "*" => {
-        acc = a * b
-        blink = false
-      }
-      case "/" => {
-        if b != 0 then
-          acc = a / b
-          blink = false
-        else
-          a = 0
-          b = 0
-          blink = false
-      }
-      case "swap" => {
-        val t = a
-        a = b
-        b = t
-      }
-      case "blink" => { blink = !blink }
-      case "acc" => {
-        if !blink then a = acc else b = acc
-        blink = !blink
-      }
-      case other => {
-        var number = parseInt(other)
-        if !blink then a = number else b = number
-        blink = !blink
-      }
+      case "+"           => setAccClearBlink(a + b)
+      case "-"           => setAccClearBlink(a - b)
+      case "*"           => setAccClearBlink(a * b)
+      case "/" if b != 0 => setAccClearBlink(a / b)
+      case "/"           => { a = 0; b = 0; blink = false }
+      case "swap"        => { val t = a; a = b; b = t }
+      case "blink"       => { blink = !blink }
+      case "acc"         => updateSideRegister(acc)
+      case other         => updateSideRegister(parseInt(other))
     }
   }
 
