@@ -1,3 +1,5 @@
+import scala.util.boundary, boundary.break
+
 /** Software implementation of PROC (PROstoy Calculator) mk. 1 (or mk. 2).
   *
   * You should finish this procedure according to the reference described in
@@ -15,11 +17,11 @@
   /** Representation of `acc` register. */
   var acc: Int = 0
 
-  /** Representations of side registers a and b. */
+  /** Representations of side registers `a` and `b`. */
   var a: Int = 0
   var b: Int = 0
 
-  /** Representation of blink flag. */
+  /** Representation of `blink` flag. */
   var blink: Boolean = false
 
   def setAccClearBlink(value: Int): Unit = {
@@ -32,17 +34,20 @@
     blink = !blink
   }
 
-  for cmd <- commands do {
-    cmd match {
-      case "+"           => setAccClearBlink(a + b)
-      case "-"           => setAccClearBlink(a - b)
-      case "*"           => setAccClearBlink(a * b)
-      case "/" if b != 0 => setAccClearBlink(a / b)
-      case "/"           => { a = 0; b = 0; blink = false }
-      case "swap"        => { val t = a; a = b; b = t }
-      case "blink"       => { blink = !blink }
-      case "acc"         => updateSideRegister(acc)
-      case other         => updateSideRegister(parseInt(other))
+  boundary {
+    for cmd <- commands do {
+      cmd match {
+        case "+"           => setAccClearBlink(a + b)
+        case "-"           => setAccClearBlink(a - b)
+        case "*"           => setAccClearBlink(a * b)
+        case "/" if b != 0 => setAccClearBlink(a / b)
+        case "/"           => { a = 0; b = 0; blink = false }
+        case "swap"        => { val t = a; a = b; b = t }
+        case "blink"       => { blink = !blink }
+        case "acc"         => updateSideRegister(acc)
+        case "break"       => break()
+        case other         => updateSideRegister(parseInt(other))
+      }
     }
   }
 
